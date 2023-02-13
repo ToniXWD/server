@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "http_conn.h": "cpp",
+        "lst_timer.h": "cpp",
+        "log.h": "cpp",
+        "threadpool.h": "cpp"
+    }
+}

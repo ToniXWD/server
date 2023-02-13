@@ -12,7 +12,9 @@ template <typename T>
 class threadpool
 {
 public:
-    /*thread_number是线程池中线程的数量，max_requests是请求队列中最多允许的、等待处理的请求的数量*/
+    // thread_number是线程池中线程的数量
+    // max_requests是请求队列中最多允许的、等待处理的请求的数量
+    // connPool是数据库连接池指针
     threadpool(connection_pool *connPool, int thread_number = 8, int max_request = 10000);
     ~threadpool();
     bool append(T *request);
@@ -65,20 +67,20 @@ template <typename T>
 bool threadpool<T>::append(T *request)
 {
     m_queuelocker.lock();
-    if (m_workqueue.size() > m_max_requests)
+    if (m_workqueue.size() > m_max_requests) // 根据硬件，预先设置请求队列的最大值
     {
         m_queuelocker.unlock();
         return false;
     }
-    m_workqueue.push_back(request);
+    m_workqueue.push_back(request); // 添加任务
     m_queuelocker.unlock();
-    m_queuestat.post();
+    m_queuestat.post(); // 信号量提醒有任务要处理
     return true;
 }
 template <typename T>
 void *threadpool<T>::worker(void *arg)
 {
-    threadpool *pool = (threadpool *)arg;
+    threadpool *pool = (threadpool *)arg; // 将参数强转为线程池类，调用成员方法
     pool->run();
     return pool;
 }
@@ -87,15 +89,15 @@ void threadpool<T>::run()
 {
     while (!m_stop)
     {
-        m_queuestat.wait();
-        m_queuelocker.lock();
+        m_queuestat.wait();   // 信号量等待
+        m_queuelocker.lock(); // 被唤醒后先加互斥锁
         if (m_workqueue.empty())
         {
             m_queuelocker.unlock();
             continue;
         }
-        T *request = m_workqueue.front();
-        m_workqueue.pop_front();
+        T *request = m_workqueue.front(); // 从请求队列中取出第一个任务
+        m_workqueue.pop_front();          // 将任务从请求队列删除
         m_queuelocker.unlock();
         if (!request)
             continue;
