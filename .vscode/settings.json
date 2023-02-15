@@ -3,6 +3,16 @@
         "http_conn.h": "cpp",
         "lst_timer.h": "cpp",
         "log.h": "cpp",
-        "threadpool.h": "cpp"
+        "threadpool.h": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp",
+        "*.tcc": "cpp",
+        "ios": "cpp",
+        "random": "cpp"
+    },
+    "cmake.debugConfig": {
+        "args": [
+            "5000",
+        ]
     }
 }
