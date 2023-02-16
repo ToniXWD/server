@@ -86,7 +86,7 @@ public:
     }
     void del_timer(util_timer *timer)
     {
-        return;
+//        return;
         if (!timer)
         {
             return;

@@ -46,12 +46,12 @@ def show_result_pyplot(model,
     return out
 
 def test_pic(img_path):
-    save_name = os.path.join('/home/toni/TinyWebServer-raw_version/root',os.path.basename(img_path))
+    save_name = os.path.join('/home/toni/TinyWebServer-raw_version/root',"out.jpg")
     print(save_name)
     result = inference_detector(model, img_path)
     out = show_result_pyplot(model, img_path, result, 0.5)
     cv2.imwrite(save_name,out)
-    
+
 
 parser = ArgumentParser()
 parser.add_argument('img_path', help='Image file')

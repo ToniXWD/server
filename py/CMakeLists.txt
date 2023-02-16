@@ -1,0 +1,1 @@
+add_library(exepy detect.cpp)

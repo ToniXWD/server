@@ -63,7 +63,7 @@ def test_pic(img_path):
         # cv2.rectangle(img_ori, (box[0],box[1]),(box[2],box[3]),(184, 125, 234),thickness=2,lineType=4)
         cv2.putText(img_ori, 'Crack{}|{}'.format(str(id),str(Score[id])), (box[0],box[1]-5),
                    cv2.FONT_HERSHEY_TRIPLEX, 1.0, color, 2)
-    save_name = os.path.join('/home/toni/TinyWebServer-raw_version/root',os.path.basename(img_path))
+    save_name = os.path.join('/home/toni/TinyWebServer-raw_version/root',"out.jpg")
     print(save_name)
     cv2.imwrite(save_name,img_ori)
     return Score,Bbox,Mask

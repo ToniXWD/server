@@ -18,7 +18,7 @@
 
 #define MAX_FD 65536           // 最大文件描述符
 #define MAX_EVENT_NUMBER 10000 // 最大事件数
-#define TIMESLOT 5             // 最小超时单位
+#define TIMESLOT 5       // 最小超时单位, 默认5
 
 #define SYNLOG // 同步写日志
 // #define ASYNLOG //异步写日志
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     // 创建线程池
     threadpool<http_conn> *pool = NULL;
     try {
-        pool = new threadpool<http_conn>(connPool, 1);
+        pool = new threadpool<http_conn>(connPool, 6);
     }
     catch (...) {
         return 1;

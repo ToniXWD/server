@@ -1,27 +1,68 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>WebServer</title>
-    </head>
-    <body>
-    <br/>
-    <br/>
-    <div align="center"><font size="5"> <strong>是时候做出选择了</strong></font></div>
-	<br/>
-		<br/>
-		<form action="5" method="post">
- 			<div align="center"><button type="submit">xxx.jpg</button></div>
-                </form>
-		<br/>
-                <form action="6" method="post">
-                        <div align="center"><button type="submit" >xxx.avi</button></div>
-                </form>
-		<br/>
-		<form action="7" method="post">
- 			<div align="center"><button type="submit">关注我</button></div>
-                </form>
-		
-        </div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>WebServer</title>
+</head>
+<body>
+<br/>
+<br/>
+<!--<div align="center"><font size="5"> <strong>做出选择了</strong></font></div>-->
+<!--<br/>-->
+<!--<br/>-->
+<!--<form action="5" method="post">-->
+<!--    <div align="center">-->
+<!--        <button type="submit">xxx.jpg</button>-->
+<!--    </div>-->
+<!--</form>-->
+<!--<br/>-->
+<!--<form action="6" method="post">-->
+<!--    <div align="center">-->
+<!--        <button type="submit">xxx.avi</button>-->
+<!--    </div>-->
+<!--</form>-->
+<!--<br/>-->
+<!--<form action="7" method="post">-->
+<!--    <div align="center">-->
+<!--        <button type="submit">关注我</button>-->
+<!--    </div>-->
+<!--</form>-->
+<div align="center">
+    <int><strong>选择要检测的裂缝图片(jpg、jpeg、png),选择后点击下方的提交信息</strong></int>
+    <br>
+    <form method="post" action="8" enctype="multipart/form-data">
+        <input align="center" type="file"  value="选择检测图片" size="22" id="select_files" name="input_image" onchange="show_selectedImage()"/>
+        <br>
+        <canvas id="image_canvas" height="800" width="800"></canvas>
+        <text name="image_className" value=""/>
+        <br>
+        <input type="submit" class="button-new" value="提交信息" style="margin-top:15px;"/>
+    </form>
+
+    <script type="text/javascript">
+        function show_selectedImage(){
+            /// get select files.
+            var selected_files = document.getElementById("select_files").files;
+            for(var file of selected_files){
+                console.log(file.webkitRelativePath);
+                /// read file content.
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function(){
+                    /// deal data.
+                    var img = new Image();
+                    /// after loader, result storage the file content result.
+                    img.src = this.result;
+                    img.onload = function(){
+                        var canvas = document.getElementById("image_canvas");
+                        var cxt = canvas.getContext('2d');
+                        cxt.drawImage(img, 0, 0);
+                    }
+                }
+            }
+        }
+    </script>
+</div>
+</div>
+</body>
 </html>

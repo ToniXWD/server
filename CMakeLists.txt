@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(server)
 
 add_subdirectory(lock)
+add_subdirectory(py)
 add_subdirectory(CGImysql)
 add_subdirectory(http)
 add_subdirectory(threadpool)
@@ -9,6 +10,8 @@ add_subdirectory(log)
 add_subdirectory(timer)
 
 add_executable(server main.cpp lock/locker.cpp)
+
+target_link_libraries(server exepy)
 target_link_libraries(server locker)
 target_link_libraries(server CGI)
 target_link_libraries(server http)
