@@ -3,14 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>检测结果</title>
+    <link rel="stylesheet" href="/bootstrap/bootstrap.3.4.min.css">
+    <link rel="stylesheet" href="/css/init.css">
 </head>
 <body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!--                <a class="navbar-brand" href="{{ url_for('qa.index') }}">-->
+                </a>
+            </div>
 
-<h1 align="center">退后重新选择图片</h1>
-
-<div align="center">
-    <img align="center" alt="1" src="./out.jpg"/>
-</div>
-
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">回到首页</a></li>
+                    <li><a href="/1">重新登录</a></li>
+                    <li><a href="/0">重新注册</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+            <h1></h1><strong>检测结果</strong>
+            <h1></h1>
+            <br>
+            <img align="center" alt="1" src="./out.jpg"/>
+        </div>
+    </div>
+</nav>
 </body>
 </html>

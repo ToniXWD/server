@@ -26,8 +26,8 @@
 class http_conn {
 public:
     static const int FILENAME_LEN = 200;       // 设置读取文件的名称m_real_file大小
-    static const int READ_BUFFER_SIZE = 81920;  // 设置读缓冲区m_read_buf大小
-    static const int WRITE_BUFFER_SIZE = 4096; // 设置写缓冲区m_write_buf大小
+    static const int READ_BUFFER_SIZE = 32768;  // 设置读缓冲区m_read_buf大小
+    static const int WRITE_BUFFER_SIZE = 2048; // 设置写缓冲区m_write_buf大小
     enum METHOD                                // 报文的请求方法，本项目只用到GET和POST
     {
         GET = 0,
@@ -55,6 +55,7 @@ public:
         FORBIDDEN_REQUEST,
         FILE_REQUEST,
         INTERNAL_ERROR, // 服务器内部错误，该结果在主状态机逻辑switch的default下，一般不会触发
+        BIG_IMAGE,
         CLOSED_CONNECTION
     };
     enum LINE_STATUS // 从状态机的状态

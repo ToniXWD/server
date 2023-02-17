@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>裂缝检测系统</title>
+    <link rel="stylesheet" href="/bootstrap/bootstrap.3.4.min.css">
+    <link rel="stylesheet" href="/css/init.css">
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+<!--                <a class="navbar-brand" href="{{ url_for('qa.index') }}">-->
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/base.html">回到首页</a></li>
+                    <li><a href="/1">重新登录</a></li>
+                    <li><a href="/0">重新注册</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+            <br>
+            <div>
+                <form method="post" action="8" enctype="multipart/form-data">
+                    <b class="text-info">模型选择</b>
+                    <select class="list-group" name="modelType" id="">
+                        <option value="m2fSwinS">Mask2former(Swin Transformer small)</option>
+                        <option value="m2fSwinT" selected>Mask2former(Swin Transformer tiny)</option>
+                        <option value="m2fR101">Mask2former(ResNet101)</option>
+                        <option value="m2fR50">Mask2former(ResNet50)</option>
+                        <option value="yolactR101">Yolact(ResNet101)</option>
+                        {#                <option value="yolactR50">Yolact(ResNet50)</option>#}
+                        {#                <option value="maskRcnnR101">Mask-RCNN(ResNet101)</option>#}
+                        {#                <option value="maskRcnnR50">Mask-RCNN(ResNet50)</option>#}
+                        <option value="msR101">Mask-Scoring-RCNN(ResNet101)</option>
+                        {#                <option value="msR50">Mask-Scoring-RCNN(ResNet50)</option>#}
+                    </select>
+                    <br>
+                    <b class="text-info">阈值输入</b><input type="text" class="thresh" name="thresh" placeholder="0.5" width="3px">
+                    <br>
+                    <br>
+                    <p1>阈值说明：①模型将滤除概率低于阈值的目标，不填此项将采用系统默认值。②对于Yolact模型，推荐阈值为0.3；其余模型阈值推荐0.5以上</p1>
+                    <br>
+                    <br>
+                    <input align="center" type="file" value="选择检测图片" size="22" id="select_files"
+                           name="input_image" onchange="show_selectedImage()"/>
+                    <br>
+                    <canvas id="image_canvas" height="800" width="800"></canvas>
+                    <text name="image_className" value=""/>
+                    <br>
+                    <input type="submit" class="button-new" value="提交信息" style="margin-top:15px;"/>
+                </form>
+                <script type="text/javascript">
+                    function show_selectedImage() {
+                        /// get select files.
+                        var selected_files = document.getElementById("select_files").files;
+                        for (var file of selected_files) {
+                            console.log(file.webkitRelativePath);
+                            /// read file content.
+                            var reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onloadend = function () {
+                                /// deal data.
+                                var img = new Image();
+                                /// after loader, result storage the file content result.
+                                img.src = this.result;
+                                img.onload = function () {
+                                    var canvas = document.getElementById("image_canvas");
+                                    var cxt = canvas.getContext('2d');
+                                    cxt.drawImage(img, 0, 0);
+                                }
+                            }
+                        }
+                    }
+                </script>
+            </div>
+        </div><!-- /.container-fluid -->
+    </div>
+</nav>
+<div class="container">
+</div>
+</body>
+</html>
