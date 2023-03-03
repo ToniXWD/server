@@ -20,7 +20,7 @@ public:
 	int GetFreeConn();					 // 获取连接
 	void DestroyPool();					 // 销毁所有连接
 
-	// 单例模式
+	// 局部静态变量单例模式
 	static connection_pool *GetInstance();
 
 	void init(string url, string User, string PassWord, string DataBaseName, int Port, unsigned int MaxConn);

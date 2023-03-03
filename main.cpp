@@ -23,8 +23,8 @@
 #define SYNLOG // 同步写日志
 // #define ASYNLOG //异步写日志
 
-//#define listenfdET // 边缘触发非阻塞
- #define listenfdLT // 水平触发阻塞
+// #define listenfdET // 边缘触发非阻塞
+#define listenfdLT // 水平触发阻塞
 
 // 这三个函数在http_conn.cpp中定义，改变链接属性
 extern int addfd(int epollfd, int fd, bool one_shot);
@@ -35,7 +35,7 @@ extern int setnonblocking(int fd);
 
 // 设置定时器相关参数
 static int pipefd[2];
-static sort_timer_lst timer_lst;
+static sort_timer_lst timer_lst; // 创建定时器容器链表
 static int epollfd = 0;
 
 // 信号处理函数
@@ -70,10 +70,10 @@ void timer_handler()
 // 定时器回调函数，删除非活动连接在socket上的注册事件，并关闭
 void cb_func(client_data *user_data)
 {
-    epoll_ctl(epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
+    epoll_ctl(epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0); // 删除非活动连接在socket上的注册事件
     assert(user_data);
-    close(user_data->sockfd);
-    http_conn::m_user_count--;
+    close(user_data->sockfd);  // 关闭文件描述符
+    http_conn::m_user_count--; // 减少连接数
     LOG_INFO("close fd %d", user_data->sockfd);
     Log::get_instance()->flush();
 }
@@ -161,16 +161,22 @@ int main(int argc, char *argv[])
     // 创建管道
     ret = socketpair(PF_UNIX, SOCK_STREAM, 0, pipefd);
     assert(ret != -1);
+    // 设置管道写端为非阻塞，为什么写端要非阻塞？
     setnonblocking(pipefd[1]);
+    // 设置管道读端为ET非阻塞
     addfd(epollfd, pipefd[0], false);
 
+    // 传递给主循环的信号值，这里只关注SIGALRM和SIGTERM
     addsig(SIGALRM, sig_handler, false);
     addsig(SIGTERM, sig_handler, false);
+    // 循环条件
     bool stop_server = false;
 
-    client_data *users_timer = new client_data[MAX_FD];
+    client_data *users_timer = new client_data[MAX_FD]; // 创建连接资源数组
 
-    bool timeout = false;
+    // 超时标志
+    bool timeout = false; // 超时默认为False
+    // 每隔TIMESLOT时间触发SIGALRM信号
     alarm(TIMESLOT);
 
     while (!stop_server)
@@ -191,10 +197,10 @@ int main(int argc, char *argv[])
             // 处理新到的客户连接
             if (sockfd == listenfd)
             {
-                struct sockaddr_in client_address;
+                struct sockaddr_in client_address; // 初始化客户端连接地址
                 socklen_t client_addrlength = sizeof(client_address);
 #ifdef listenfdLT
-                int connfd = accept(listenfd, (struct sockaddr *)&client_address, &client_addrlength);
+                int connfd = accept(listenfd, (struct sockaddr *)&client_address, &client_addrlength); // 该连接分配的文件描述符
                 if (connfd < 0)
                 {
                     LOG_ERROR("%s:errno is:%d", "accept error", errno);
@@ -212,13 +218,13 @@ int main(int argc, char *argv[])
                 // 创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
                 users_timer[connfd].address = client_address;
                 users_timer[connfd].sockfd = connfd;
-                util_timer *timer = new util_timer;
-                timer->user_data = &users_timer[connfd];
-                timer->cb_func = cb_func;
+                util_timer *timer = new util_timer;      // 创建定时器临时变量
+                timer->user_data = &users_timer[connfd]; // 设置定时器对应的连接资源
+                timer->cb_func = cb_func;                // 设置回调函数
                 time_t cur = time(NULL);
-                timer->expire = cur + 3 * TIMESLOT;
-                users_timer[connfd].timer = timer;
-                timer_lst.add_timer(timer);
+                timer->expire = cur + 3 * TIMESLOT; // 设置绝对超时时间
+                users_timer[connfd].timer = timer;  // 创建该连接对应的定时器，初始化为前述临时变量
+                timer_lst.add_timer(timer);         // 将该定时器添加到链表中
 #endif
 
 #ifdef listenfdET
@@ -267,14 +273,18 @@ int main(int argc, char *argv[])
                 }
             }
 
-            // 处理信号
+            // 处理定时器信号
+            // 管道读端对应文件描述符发生读事件
             else if ((sockfd == pipefd[0]) && (events[i].events & EPOLLIN))
             {
                 int sig;
                 char signals[1024];
+                // 从管道读端读出信号值，成功返回字节数，失败返回-1
+                // 正常情况下，这里的ret返回值总是1，只有14和15两个ASCII码对应的字符
                 ret = recv(pipefd[0], signals, sizeof(signals), 0);
                 if (ret == -1)
                 {
+                    // handle the error
                     continue;
                 }
                 else if (ret == 0)
@@ -283,10 +293,13 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    // 处理信号值对应的逻辑
                     for (int i = 0; i < ret; ++i)
                     {
+                        // 这里面明明是字符
                         switch (signals[i])
                         {
+                        // 这里是整型
                         case SIGALRM:
                         {
                             timeout = true;
@@ -304,6 +317,7 @@ int main(int argc, char *argv[])
             // 处理客户连接上接收到的数据
             else if (events[i].events & EPOLLIN)
             {
+                // 创建定时器临时变量，将该连接对应的定时器取出来
                 util_timer *timer = users_timer[sockfd].timer;
                 // 读入对应缓冲区
                 if (users[sockfd].read_once())
@@ -326,6 +340,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    // 服务器端关闭连接，移除对应的定时器
                     timer->cb_func(&users_timer[sockfd]);
                     if (timer)
                     {
@@ -354,6 +369,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    // 服务器端关闭连接，移除对应的定时器
                     timer->cb_func(&users_timer[sockfd]);
                     if (timer)
                     {
@@ -362,6 +378,8 @@ int main(int argc, char *argv[])
                 }
             }
         }
+        // 处理定时器为非必须事件，收到信号并不是立马处理
+        // 完成读写事件后，再进行处理
         if (timeout)
         {
             timer_handler();
